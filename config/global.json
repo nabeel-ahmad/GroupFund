@@ -1,0 +1,24 @@
+{
+    "applications": {
+        "GroupFundDev": {
+            "applicationId": "PARSE_APP_ID", 
+            "masterKey": "PARSE_APP_MASTER_KEY"
+        }, 
+        "Local": {
+            "applicationId": "PARSE_APP_ID", 
+            "masterKey": "PARSE_APP_MASTER_KEY"
+        }, 
+        "_default": {
+            "link": "Local"
+        }, 
+        "dev": {
+            "link": "GroupFundDev"
+        }, 
+        "local": {
+            "link": "Local"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.2.8"
+    }
+}

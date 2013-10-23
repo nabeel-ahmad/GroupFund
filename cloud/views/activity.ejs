@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:og="http://ogp.me/ns#">
+
+    <head>
+        <meta name="twitter:card" content="product">
+        
+        <title><%= truncatedTitle %></title>
+        <meta name="description" content="<%= activity.attributes.title %>"/>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+
+        <meta property="og:title" content="<%= truncatedTitle %>" />
+        
+        <meta name="twitter:title" content="<%= truncatedTitle %>">
+        <meta name="twitter:description" content="<%= activity.attributes.title %>">
+		<meta name="twitter:label1" content="Target Amount">
+        <meta name="twitter:data1" content="$<%= activity.attributes.amount/100 %> USD">
+		<meta name="twitter:label2" content="End Date">
+		<% if(locals.endDateStr) { %>
+			<meta name="twitter:data2" content="<%= endDateStr %>">
+		<% } %>
+		<meta name="twitter:app:id:iphone" content="659554968">
+		<meta name="twitter:app:name:iphone" content="GroupFund">
+		<meta name="twitter:app:url:iphone" content="groupfund://activity/<%= activity.id %>">
+		<meta name="apple-itunes-app" content="app-id=659554968, app-argument=groupfund://activity/<%= activity.id %>">
+        
+        <% if(activity.attributes.picture) { %>
+			<meta name="twitter:image:src" content="<%= activity.attributes.picture._url %>">
+			<link rel="image_src" href="<%= activity.attributes.picture._url %>" / >
+			<meta property="og:image" content="<%= activity.attributes.picture._url %>" />
+		<% } else if(activity.attributes.image) { %>
+			<meta name="twitter:image:src" content="https://www.groupfundapp.co/images/stock/<%= activity.attributes.image %>">
+			<link rel="image_src" href="https://www.groupfundapp.co/images/stock/<%= activity.attributes.image %>" />
+			<meta property="og:image" content="https://www.groupfundapp.co/images/stock/<%= activity.attributes.image %>" />
+		<% } else { %>
+			<meta name="twitter:image:src" content="https://www.groupfundapp.co/images/logo.png">
+			<link rel="image_src" href="https://www.groupfundapp.co/images/logo.png" />
+			<meta property="og:image" content="https://www.groupfundapp.co/images/logo.png" />
+       	<% } %>
+
+		
+		<script src="js/jquery.min.js" ></script>
+    	<script src="js/parse-1.2.8.min.js"></script>
+		<script src="js/underscore-min.js"></script>
+        <script type='text/javascript' src="https://js.balancedpayments.com/v1/balanced.js"></script>
+        <script src="js/jquery.maskedinput.min.js" type="text/javascript"></script>
+	    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    	<link href="assets/css/bootstrap-responsive.min.css" rel="stylesheet">
+    	<link href="assets/css/theme/boot-biz.css" rel="stylesheet">
+    	<link href="style.css" rel="stylesheet">
+    	<script src="js/bootstrap-modal.js"></script>
+    	
+    	<!-- start Mixpanel --><script type="text/javascript">(function(e,b){if(!b.__SV){var a,f,i,g;window.mixpanel=b;a=e.createElement("script");a.type="text/javascript";a.async=!0;a.src=("https:"===e.location.protocol?"https:":"http:")+'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';f=e.getElementsByTagName("script")[0];f.parentNode.insertBefore(a,f);b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==
+typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.track_charge people.clear_charges people.delete_user".split(" ");for(g=0;g<i.length;g++)f(c,i[g]);
+b._i.push([a,e,d])};b.__SV=1.2}})(document,window.mixpanel||[]);
+mixpanel.init("<%=mixPannelKey%>");</script><!-- end Mixpanel -->
+    	
+	</head>
+
+    <body>
+
+<div class="container">
+	<div class="main-wrapper ">
+		
+		<div class="span6 banner">
+			<% if(activity.attributes.picture) { %>
+				<div class="row-fluid">
+              		<img id="activityPic" src="<%= activity.attributes.picture._url %>" class="img-polaroid" />
+				</div>
+			<% } else if(activity.attributes.image) { %>
+				<div class="thumbnail">
+              		<img id="activityPic" src="/images/stock/<%= activity.attributes.image %>"/>
+				</div>
+			<% } %>
+	        <div class="thumbnailcontent" style="margin: 10px 0px;">
+	            <div class="row-fluid"   >
+	             	 <div  style="vertical-align:middle">
+	             	 	<% if(activity.attributes.owner.attributes.picture) { %>
+	           	 			<img id="userImage" src="<%= activity.attributes.owner.attributes.picture._url %>" class="img-polaroid" width="64px"  />	
+	             	 	<% } else { %>
+	           	 			<img id="userImage" src="/images/user_default.png" class="img-polaroid" width="64px"  />	
+	             	 	<% } %>
+	            		<h4 id="userName" style="margin-top: 30px;"><%= activity.attributes.owner.attributes.fname + ' ' + activity.attributes.owner.attributes.lname %></h4>
+	            	 </div> 
+	            </div>
+	        </div>
+
+		
+			<legend>Details</legend>
+
+			<div class="row-fluid " style="margin-bottom: 20px;">
+				<div   class="span12">
+					<label id="title"><%= activity.attributes.title %></label>
+			    </div>
+			</div>
+			
+			<% if(activity.attributes.type == "crowd") { %>
+				<div class="row-fluid " >
+					<div  class="span12">
+					 	<label style="float:left">End Date</label>
+				    	<label id="endDate"style="float:right;"><%= endDateStr %></label>
+				    	<div style="clear:both"></div>
+				    </div>
+				</div>
+			<% } %>
+			
+			<div class="row-fluid " >
+				<div  class="span12">
+					<label style="float:left"><%= activity.attributes.type == "crowd" ? 'Target Amount' : 'Amount'%></label>
+					<% if(activity.attributes.type == "crowd") { %>
+						<label id="amount" style="float:right;">$<%= activity.attributes.amount/100 %></label>
+					<% } else {%>
+						<label id="amount" style="float:right;">$<%= invitation.attributes.invitee.amount/100 %></label>
+					<% } %>
+					<div style="clear:both"></div>
+				</div >
+			</div>
+	
+			<% if(showPayment) { %>
+				<div id="contribBtn" class="row-fluid " style="margin-bottom: 30px;">
+					<% if(!activity.attributes.endDate || (activity.attributes.endDate > new Date() && activity.attributes.status == 'waiting') ) { %>
+						<button id="contibLink" class="btn btn-primary btn-large btn-oval span12  " onclick=" $('#paymentCont').show();$('#result').hide(); $(this).hide(); $('#paymentCont').goTo(); $('#ccName').focus();">
+							<strong><%= activity.attributes.type == "crowd" ? 'Contribute' : 'Make Payment'%></strong>
+						</button>
+					<% } else { %>
+						<div  align="center">
+							<h4>
+								<% if(activity.attributes.status == 'funded' ) { %>
+									Activity has been funded.
+								<% } else if(activity.attributes.status == 'closed' ) { %>	
+									Activity has been closed.
+								<% } else if(activity.attributes.status == 'ended' ) { %>	
+									Activity has ended.
+								<% } %>
+							</h4>	
+						</div>
+					<% } %>
+				</div>
+			<% } %>
+			
+			<div class="row-fluid " id="result" style="display:none;">
+				<div class="span12 alert alert-success">
+					<strong id="successMsg"></strong>
+				</div>
+			</div>
+			
+			
+		</div>
+	</div>
+</div>
+		<div id="paymentCont" class="container" style="display:none;">
+			<div class="main-wrapper">
+				<div class="span6 banner">
+					<form id="payment" class="form-horizontal span6" style="margin-left: 0px" >
+					<fieldset>
+		 			<legend>Payment</legend>
+		 				<div id="securityBar" class="row-fluid " style="margin-bottom: 20px; text-align:center">
+		  					<a href="https://www.groupfundapp.co/security.html" target="_blank">
+		  						<img src="/images/securityBar@2x.png" style="width: 90%;"/>
+		  					</a>
+		 				</div>
+						<div class="control-group">
+							<label class="control-label">Full Name</label>
+								<div class="controls" >
+									<input id="ccName"  class="input-block-level" name="creditCardName" type="text"  pattern="\w+ \w+.*" required>
+								</div>
+						</div>
+						
+					<div class="control-group">
+				    	<label class="control-label">Card Type</label>
+				    		<div class="controls">
+								<table style="width: 100%;">
+									<tr>
+								    	<td>
+											<select class="input-block-level span3" id="cardType" onchange="changeFunc();">
+												<option selected="selected" value="1" >Visa</option> 
+												<option value="2" >Master Card</option>
+												<option value="3" >Amex</option>
+												<option value="4" >Discover</option> 
+											</select>
+								   		</td>		
+										<td><img id="cardImage" src="/images/visa.png" style=" float: right;" width="48px"/></td>
+							   		</tr>
+								</table>
+							</div>
+					</div>
+
+	
+						<div class="control-group">
+							<label class="control-label">Credit Card Number</label>
+								<div class="controls">
+									<input name="card_number"  class="input-block-level" id="card_number" type="tel" autocomplete="off" title="16 digit number without spaces" required>
+								</div>
+						</div>
+		 
+						<div class="control-group">
+							<label class="control-label">Expiration</label>
+								<div class="controls">
+									<div class="row-fluid">
+										<div class="span9">
+											<select class="input-block-level" id="expiration_month">
+								
+												<option value="1" >January</option> 
+												<option value="2" >Feburary</option> 
+												<option value="3" >March</option> 
+												<option value="4" >April</option> 
+												<option value="5" >May</option> 
+												<option value="6" >June</option> 
+												<option value="7" >July</option> 
+												<option value="8" >August</option> 
+												<option value="9" >September</option> 
+												<option value="10">October</option> 
+												<option value="11" >November</option> 
+												<option value="12" >December</option> 
+												 
+											</select>
+										</div>
+									<div class="span3">
+										<select class="input-block-level" id="expiration_year">
+											<% for(var i=2013; i<2030; i++) {%>
+												<option <% if(i == 2014) { %> <%= selected="selected" %> <%}%> > 
+													<%= i %>
+												</option>
+											<% } %>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+				
+		 
+					<div class="control-group">
+						<label class="control-label">CVV</label>
+							<div class="controls">
+								<div class="row-fluid">
+									<div class="span3">
+										<input name="security_code" id="security_code" class="input-block-level" type="tel"  autocomplete="off" title="Three digits at the back of your card" required>
+									</div>
+									<div class="span8">
+								
+									</div>
+								</div>
+							</div>
+					</div>
+					
+				
+					<legend>Email and Postal Code</legend>
+										
+					<div class="control-group">
+						<label class="control-label">Email Address</label>
+			            <div class="controls" >
+			                <input name="email" class="input-block-level" type="email" id="email" required/>
+			            </div>
+			        </div>
+			        
+			        <div class="control-group">
+			        	<label class="control-label">Postal Code</label>
+			            <div class="controls" >
+			            	<input id="postal_code" name="postal_code" type="tel" class="input-block-level" />
+			            </div>
+			        </div>
+		        
+				<legend><%= activity.attributes.type == "crowd" ? 'Your Contribution' : 'Your Payment'%></legend>
+						
+		        
+		        <div class="control-group" style="color: gray;">
+			        <table style="width: 100%;">
+			        	<tr>
+			        		<td><label class="control-label">Amount</label></td>
+			        		<td>
+			        			<% if(!locals.invitation) { %>
+				        			<div class="input-prepend " style="float: right;">
+	                					<span class="add-on">$</span>
+	                   					<input id="contributedAmount" min="0.8" max="1000" autocomplete="off" style="text-align: right; max-width: 80px;" onkeyup="recordFee()" type="number" step="0.01" name="amount" required/>
+	      							</div>
+      							<% } else { %>
+      								<label style="float:right;">$<%= (invitation.attributes.invitee.amount/100).toFixed(2) %></label>
+      							<% } %>
+      						</td>
+			        	</tr>
+			        	<tr>
+			        		<td><label class="control-label">Processing Fee
+			        		<a href="https://www.groupfundapp.co/fees.html" target="_blank">?</a></label></td>
+			        		
+			        		<td><label id="calculatedFee" style="float:right;">$<%= locals.invitation ? (fee/100).toFixed(2) : 0 %></label></td>
+			        	</tr>
+			        	<tr>
+			        		<td><label class="control-label">Total</label></td>
+			        		<td><label id="total" style="float:right;">$<%= locals.invitation ? (total/100).toFixed(2) : 0 %></label></td>
+			        	</tr>
+			        </table>
+		        </div>
+		        
+		        
+		
+			<div class="row-fluid " id="errorResult" style="display:none;">
+				<div  id="err" class="span12 alert alert-error" >
+					
+					<button data-dismiss="alert" class="close" type="button" onclick="$('#errorResult').hide();">&times;</button>
+					<ul id="errors"></ul>
+				</div>
+			</div> 
+				
+				<div id="contribute" class="row-fluid " style="margin-bottom: 30px;">
+				<p style="text-align: center; padding: 0 15%;"> Your card will not be charged until <%= activity.attributes.owner.attributes.fname + ' ' + activity.attributes.owner.attributes.lname %> collects the payment through the app.</p>
+					<button class="btn btn-primary btn-large btn-oval span11" style="margin-top: 20px;" id="btn1">
+					<strong>Submit<strong>
+					</button>
+					<!--  <button type="button" class="btn" onclick="$('#userImage').goTo(); $('#payment').find('input[type=text], textarea').val(''); recordFee(); return false;">Cancel</button> -->
+		  		</div>
+		  		
+		  		<div id="balanceLogo" class="row-fluid " style="margin-bottom: 20px; text-align:center">
+		  			<a href="https://www.balancedpayments.com/privacy" target="_blank">
+		  			<img src="/images/secured-2-3.png"/>
+		  			</a>
+		  			<div class="span12" style="text-align: center;margin-top: 20px;">
+		  				<a  href="https://www.balancedpayments.com/privacy" target="_blank">Balanced Payments Privacy Policy</a>
+		  			</div>
+		  		</div>
+		  		
+		  		<div id="links" class="row-fluid " >
+		  		<div class="span12" style="text-align: center;">
+		  			<a  href="https://www.groupfundapp.co/security.html" target="_blank">Security</a> - 
+		  			<a  href="https://www.groupfundapp.co/privacy.html" target="_blank">Privacy Policy</a> - 
+		  			<a  href="https://www.groupfundapp.co/terms.html" target="_blank">Terms Of Service</a>
+		  		</div>
+		  		</div>
+			</fieldset>
+		</form>
+		
+		
+		</div>
+		</div>
+	</div>
+	 
+	<div id="spinnerModal" class="modal hide fade" tabindex="-1">
+		  <div class="modal-body" style="text-align: center;">
+		  
+		  	<img alt="" src="images/page-loader.gif">
+		  	<p>Loading. Please wait...</p>
+		  </div>
+	</div>
+	
+        <!-- Javascript -->
+  
+   
+        <script>
+        	
+        	Parse.initialize("<%=appId%>","<%=jsKey%>");
+        	balanced.init("<%= marketplaceUri %>");
+        	
+       
+        	  $(document).ready(function(){
+	       	  $("#email").focus();
+	       	  $("#card_number").mask("9999 9999 9999 9999");
+	       	  $("#security_code").mask("999");
+	       	  $("#postal_code").mask("99999");
+	       	    	 
+	       	});
+        	
+     		function changeFunc() {
+        	 
+        	 	$("#cardImage").html("");
+    			var selectBox = document.getElementById("cardType");
+    			var selectedValue = selectBox.options[selectBox.selectedIndex].text;
+    			
+    			if(selectedValue === "Visa"){
+    				$("#card_number").mask("9999 9999 9999 9999");
+    				$("#security_code").mask("999");
+    				$("#cardImage").attr("src","/images/visa.png");
+    			}
+    			else if(selectedValue === "Master Card"){
+    				$("#card_number").mask("9999 9999 9999 9999");
+    				$("#security_code").mask("999");
+    				$("#cardImage").attr("src","/images/mastercard.png");
+    			}
+    			else if(selectedValue === "Discover"){
+    				$("#card_number").mask("9999 9999 9999 9999");
+    				$("#security_code").mask("999");
+    				$("#cardImage").attr("src","/images/discover.png");
+    			}
+    			else if(selectedValue === "Amex"){
+    				$("#card_number").mask("9999 999999 99999");
+    				$("#security_code").mask("9999");
+    				$("#cardImage").attr("src","/images/amex.png");
+    			}
+    			
+    		}
+        	
+        	var currentUser = null;
+        	var email;
+        	var amount;
+        	var fee;
+        	
+       	 	function getURLParameter(name) {
+	       	    return decodeURI(
+	       	        (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
+	       	    );
+	       	}
+	       	 
+	       	function recordFee(){
+	       	    var $form = $('form#payment');
+	       	    var num = $form.find('[name="amount"]').val();
+	       	    if(num == "")
+	       	    {
+	       			$('#calculatedFee').text("$0");
+	       			$('#total').text("$0");
+	       		    	
+	       	    }
+	       	    num=parseFloat(num);
+	       	    var feeInCents = Math.ceil((num*100) * (<%= fees.debit_fee_percent %> / 100)) + <%= fees.debit_fee %>;
+	       	    if($.isNumeric(num) && num > 0 )
+	       	    {
+	       	    		$('#calculatedFee').text("$"+(feeInCents/100).toFixed(2));
+	       	    		$('#total').text(("$"+(num+(feeInCents/100)).toFixed(2)));
+	       	    }
+	       	    
+	       	}
+	       	
+	       	function errorNotification(response){
+	       		$('#spinnerModal').modal('hide');
+	       	    document.getElementById('btn1').removeAttribute("disabled");
+	       	 	$('#errors').empty();
+				_.each(_.pairs(response.error),function(error){
+					$('#errors').append('<li>'+error[0] + " : " + error[1] +'</li>');
+				});
+				$('#errorResult').show();
+	       	}
+
+	       	function balancedCallback(response) {
+	       		var errorMessage=[];
+	       	    switch (response.status) {
+	       	        case 201:
+	       	        	contributeOnline(response.data);	       	        	
+	       	            break;
+	       	        case 400:
+	       	        	errorNotification(response);
+	       	            break;
+	       	        case 403:
+	       	        	errorNotification(response);
+	       	            break;
+	       	        case 402:
+	       	        	errorNotification(response);
+	       	            break;
+	       	        case 404:
+	       	        	errorNotification(response);
+	       	            break;
+	       	        default:
+	       	            break;
+	       	    }
+	       	}
+
+	       	function contributeOnline(data) {
+	       		var activityId = getURLParameter("id");
+	       		
+	       		if(activityId) {
+	       			var request = {	    	       		
+       		            name: $('form#payment').find('[name="creditCardName"]').val(),
+       		            amount: amount,
+       		            fee: fee,	       		            
+       		            activityId: activityId,
+       		            card: data
+	       		    };
+	       			if(email)
+	       				request.email = email;
+	       			<% if(locals.invitation) { %>
+	       				request.invitationId = "<%= invitation.id %>";
+	       			<% } %>
+	       		    Parse.Cloud.run('contribute', request, {
+	       		        success: function (result) {
+	       		         	document.getElementById('btn1').removeAttribute("disabled");
+	       		       	    mixpanel.identify( $("#email").val());
+	       		       	    mixpanel.people.set({"$name":$("#ccName").val(),"$email":$("#email").val()});
+	       		       	    var fullName=$("#ccName").val();
+	       		       		var nameArr = fullName.split(" ");
+						
+							mixpanel.people.set({"$firstname": nameArr[0],"$lastname":nameArr[nameArr.length-1]});
+							
+		       		       	<% if(activity.attributes.type == "crowd") { %>
+	       		       			 mixpanel.track("PoolMoney_Contributed_Web");
+	       		       	 	<%}else if(activity.attributes.type == "group"){%>
+	       		     			mixpanel.track("RecieveMoney_Paid_Web");
+	       		       	 	<%}%>
+
+	       		      	 	$('#spinnerModal').modal('hide');
+	       					$('#paymentCont').hide();
+	       					$('#successMsg').text("Payment of $" + amount/100+" was successful!");
+	       					$('#result').show();
+	       		        },
+	       		        error: function (error) {
+	       		        	$('#spinnerModal').modal('hide');
+	       		        	document.getElementById('btn1').removeAttribute("disabled");
+	       		        	
+	       		        	$('#errors').empty();
+	       					$('#errors').append('<li>' + error.message +'</li>');
+	       					$('#errorResult').show();
+	       		        	
+	       		        }
+	       		    });
+	       		}
+	       	}
+	       	
+	       	function validation(){
+	       	    
+	       		var $form = $('form#payment');
+	       		
+	       	    name = $form.find('[name="creditCardName"]').val();
+	       	    if(name.length == 0) {
+	       	    	$form.find('[name="creditCardName"]').focus();
+	       	    	return false;
+	       	    }
+	       	    
+	       	    email = $form.find('[name="email"]').val();
+	       	    <% if(!locals.invitation) { %>	       	    
+		       	    var figure = $form.find('[name="amount"]').val();
+		       	    em=$('#email');
+		       	    fig=$('#contributedAmount');
+		       	    
+		       	 	if(fig.val().length == 0) {
+		       	    	fig.focus();
+		       	    	return false;
+		       	    }
+		       	    
+		       	    var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+		       	    if (!filter.test(email)) {
+		       	        alert("Please provide a valid email address");
+		       	     	em.focus();   
+		       	     	return false;
+		       	    }
+		       	    
+		       	    else
+		       	    	return true;	       	    
+	       	    <% } else {%>
+	       	 		return true;
+	       	    <% } %>
+	       	 
+	       	}
+	       	
+	
+	       	var tokenizeCard = function (e) {
+	       	    e.preventDefault();
+	       		if(validation())
+	       	    {
+	       			document.getElementById('btn1').setAttribute("disabled","disabled");
+	       	       	var $form = $('form#payment');
+	       	     	
+	       	       	<% if(!locals.invitation) { %>
+		       	    	amount = $form.find('[name="amount"]').val();
+		       	    	amount=parseInt(amount);
+		       	    	amount=amount*100;
+		       	    	fee = Math.ceil(amount * (2.9 / 100)) + 30;
+		       	    <% } else {%>
+		       	 		amount = <%= invitation.attributes.invitee.amount %>
+		       	 		fee = <%= fee %>
+		       	    <% } %>	
+	
+	       	    	var str=$form.find('[name="card_number"]').val();
+	       	        str=str.replace(/\s/g, "");
+	       	    	var cardData = {
+	       	        	name: $form.find('[name="creditCardName"]').val(),
+	       	        	card_number: str,
+	       	        	expiration_month: $("#expiration_month").val(),
+	       	        	expiration_year: $("#expiration_year").val(),
+	       	        	security_code: $form.find('[name="security_code"]').val(),
+	       	        	postal_code: $form.find('[name="postal_code"]').val()
+	       	    	};
+	       	     	$('#spinnerModal').modal('show');
+	       	        balanced.card.create(cardData, balancedCallback);
+	       	    }
+	       		else
+	       			return;
+	       	};
+
+	       	$('#payment').submit(tokenizeCard);
+	       	
+	       	(function($) {
+	       	    $.fn.goTo = function() {
+	       	        $('html, body').animate({
+	       	            scrollTop: $(this).offset().top + 'px'
+	       	        }, 'fast');
+	       	        return this; // for chaining...
+	       	    }
+	       	})(jQuery);
+	       	
+        </script>
+
+    </body>
+
+</html>

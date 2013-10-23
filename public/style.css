@@ -1,0 +1,55 @@
+body {
+	font-size:14px;
+}
+
+.main-wrapper {
+	
+	max-width:640px  !important;
+	margin:0px auto;
+	vertical-align:middle;
+}
+.banner{
+	padding: 0px 14px;
+}
+.img-polaroid {
+	float:left;
+	display:block;
+}
+
+.img-polaroid {
+	float:left;
+	display:block;
+}
+
+.thumbnailcontent h4 {
+	float:left;
+	padding-left:10px;
+}
+.price{
+	float:right;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+label {font-size: 16px; !important}
+input{font-size: 16px !important;}
+
+.input-prepend.input-block-level {
+  display: table;
+  width: 100%;
+}
+
+.input-prepend.input-block-level .add-on {
+  display: table-cell;
+}
+
+.input-prepend.input-block-level > input {
+  box-sizing: border-box;
+  height: 30px;
+  display: table-cell;
+  width: 100%;
+  border-left-style: none;
+}
